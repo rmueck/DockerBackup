@@ -7,9 +7,6 @@ containers, backing up their configurations and volumes, and subsequently
 restarting the containers in a designated order or all at once if no order is
 delineated.
 
-![Docker Backup Notification Screenshot](docker_backup_notification.jpg)
-_Above is a screenshot illustrating how the notifications appear on Pushover._
-
 ## Prerequisites
 
 Ensure the following prerequisites are satisfied before executing the script:
@@ -21,6 +18,27 @@ Ensure the following prerequisites are satisfied before executing the script:
   * **Pushover (Optional):** To receive notifications on backup status, set up a [Pushover](https://pushover.net/) account and install the app on your device.
 
 ## Configuration
+
+The script contains a configuration section at its beginning, allowing you to
+tailor various settings to match your environment:
+
+
+
+    # Configuration section
+
+~~~
+DEFAULTS = {
+    "temp_backup_dir": "/tmp",
+    "base_backup_dir": "/var/tmp/Docker-Backups",
+    "max_backups": 3,
+    "docker_volume_dir": "/var/lib/docker/volumes",
+    "additional_directories_to_backup": [],
+    "rclone_destination": "",
+    "pushover_api_token": "",
+    "pushover_user_key": "",
+    "containers_in_order": [],
+    "backup_container_name": ""
+}
 
 ### Sample Configuration File
 
@@ -53,27 +71,6 @@ Ensure the following prerequisites are satisfied before executing the script:
   "backup_container_name": "caddy"
 }
 ~~~
-The script contains a configuration section at its beginning, allowing you to
-tailor various settings to match your environment:
-
-
-
-    # Configuration section
-
-~~~
-DEFAULTS = {
-    "temp_backup_dir": "/tmp",
-    "base_backup_dir": "/var/tmp/Docker-Backups",
-    "max_backups": 3,
-    "docker_volume_dir": "/var/lib/docker/volumes",
-    "additional_directories_to_backup": [],
-    "rclone_destination": "",
-    "pushover_api_token": "",
-    "pushover_user_key": "",
-    "containers_in_order": [],
-    "backup_container_name": ""
-}
-
     # Additional directories to backup (Optional)
     # If you have any additional directories you want to backup alongside your Docker volumes, specify them here.
     # The backups will be named after the directory's base name and stored in the same location as other backups.
@@ -117,10 +114,9 @@ The script should be executed with superuser privileges to avoid permission
 issues, although users can adapt the script to suit their requirements. Use
 the following command to run the script:
 
-
-
-    sudo python3 docker_backup.py
-
+~~~bsh
+sudo python3 docker-backup.py
+~~~
 
 ## Automating the Script with Crontab
 
