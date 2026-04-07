@@ -26,7 +26,6 @@ DEFAULTS = {
     "backup_container_name": ""
 }
 
-
 def load_config(path):
     cfg = {}
     try:
@@ -62,7 +61,6 @@ def load_config(path):
 
     return cfg
 
-
 parser = argparse.ArgumentParser(description="Docker backup script")
 parser.add_argument("--config", "-c", default="/etc/docker-backup/config.json",
                     help="Path to JSON config file (default: /etc/docker-backup/config.json)")
@@ -92,8 +90,6 @@ os.makedirs(TEMP_BACKUP_DIR, exist_ok=True)
 # -------------------------
 # Helper functions
 # -------------------------
-
-
 def run(cmd, check=False):
     if DRY_RUN:
         print(f"+ {' '.join(cmd)}")
@@ -101,7 +97,6 @@ def run(cmd, check=False):
     if check:
         return subprocess.run(cmd, check=True)
     return subprocess.run(cmd, capture_output=True)
-
 
 def send_pushover_notification(message):
     print("\n" + message)
@@ -120,12 +115,10 @@ def send_pushover_notification(message):
                  }), {"Content-type": "application/x-www-form-urlencoded"})
     conn.getresponse()
 
-
 def is_container_running(container_name):
     result = run(["docker", "inspect", "-f", "{{.State.Running}}", container_name])
     out = result.stdout.decode() if result.stdout else ""
     return out.strip() == "true"
-
 
 def wait_for_container(container_name, timeout=300):
     start = time.time()
@@ -137,10 +130,8 @@ def wait_for_container(container_name, timeout=300):
         time.sleep(5)
     return True
 
-
 def start_container(container_name):
     run(["docker", "start", container_name])
-
 
 def log_backup_details(timestamp, backup_name, backup_size, cloud_path=None):
     log_entry = f"Date: {timestamp}, Size: {backup_size:.2f} MB, Local Path: {os.path.join(BASE_BACKUP_DIR, timestamp, backup_name)}"
@@ -153,11 +144,19 @@ def log_backup_details(timestamp, backup_name, backup_size, cloud_path=None):
 # -------------------------
 # Main
 # -------------------------
-
+def safe_hostname():
+    try:
+        hn = os.uname().nodename.split(".")[0]
+    except Exception:
+        hn = os.getenv("HOSTNAME", "host")
+    return "".join(c if (c.isalnum() or c in "-_") else "_" for c in hn)
 
 def main():
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    current_backup_dir = os.path.join(BASE_BACKUP_DIR, timestamp)
+    hostname_part = safe_hostname()
+    dir_name = f"{timestamp}-{hostname_part}"
+    current_backup_dir = os.path.join(BASE_BACKUP_DIR, dir_name)
+
     if not DRY_RUN:
         os.makedirs(current_backup_dir, exist_ok=True)
     else:
@@ -206,14 +205,14 @@ def main():
     if DRY_RUN:
         print(f"DRY RUN: Would move {temp_backup_path} to {os.path.join(current_backup_dir, 'docker_backup.tar.gz')}")
     else:
-        os.replace(temp_backup_path, os.path.join(current_backup_dir, "docker_backup.tar.gz"))
+        shutil.move(temp_backup_path, os.path.join(current_backup_dir, "docker_backup.tar.gz"))
 
     backup_name = "docker_backup.tar.gz"
     if not DRY_RUN:
         backup_size = os.path.getsize(os.path.join(current_backup_dir, backup_name)) / (1024 * 1024)
     else:
         backup_size = 0.0
-    log_backup_details(timestamp, backup_name, backup_size, os.path.join(RCLONE_DESTINATION, timestamp, backup_name) if RCLONE_DESTINATION else None)
+    log_backup_details(dir_name, backup_name, backup_size, os.path.join(RCLONE_DESTINATION, dir_name, backup_name) if RCLONE_DESTINATION else None)
 
     for dir_to_backup in ADDITIONAL_DIRECTORIES_TO_BACKUP:
         print(f"Backing up directory {dir_to_backup}...")
@@ -224,9 +223,9 @@ def main():
             if DRY_RUN:
                 print(f"DRY RUN: Would move {temp_backup_path} to {os.path.join(current_backup_dir, backup_name)}")
             else:
-                os.replace(temp_backup_path, os.path.join(current_backup_dir, backup_name))
+                shutil.move(temp_backup_path, os.path.join(current_backup_dir, backup_name))
                 backup_size = os.path.getsize(os.path.join(current_backup_dir, backup_name)) / (1024 * 1024)
-                log_backup_details(timestamp, backup_name, backup_size, os.path.join(RCLONE_DESTINATION, timestamp, backup_name) if RCLONE_DESTINATION else None)
+                log_backup_details(dir_name, backup_name, backup_size, os.path.join(RCLONE_DESTINATION, dir_name, backup_name) if RCLONE_DESTINATION else None)
         except subprocess.CalledProcessError:
             print(f"Error while backing up {dir_to_backup}. Skipping.")
 
@@ -247,11 +246,11 @@ def main():
 
     upload_status_icon = "⚠️ Skipped"
     if RCLONE_DESTINATION:
-        print(f"Starting rclone copy to {os.path.join(RCLONE_DESTINATION, timestamp)}...")
+        print(f"Starting rclone copy to {os.path.join(RCLONE_DESTINATION, dir_name)}...")
         if not DRY_RUN:
             rclone_result = run(
-                ["rclone", "copy", current_backup_dir, os.path.join(RCLONE_DESTINATION, timestamp)],
-                )
+                ["rclone", "copy", current_backup_dir, os.path.join(RCLONE_DESTINATION, dir_name)],
+            )
             rclone_output = (rclone_result.stdout.decode() if rclone_result.stdout else "") + (rclone_result.stderr.decode() if rclone_result.stderr else "")
             upload_status_icon = "✅" if "Failed to copy" not in rclone_output else "❌"
             print("Rclone copy finished.")
@@ -288,8 +287,6 @@ def main():
     message += f"🐳 Number of containers backed up: {len(all_containers_ids)}\n"
     send_pushover_notification(message)
 
-
 if __name__ == "__main__":
     main()
-
 
