@@ -1,5 +1,5 @@
 {
-  "temp_backup_dir": "/tmp",
+  "temp_backup_dir": "/var/tmp",
   "base_backup_dir": "/var/tmp/Docker-Backups",
   "max_backups": 3,
   "docker_volume_dir": "/var/lib/docker/volumes",
@@ -10,7 +10,7 @@
     "/var/Containers/caddy",
     "/var/Containers/hedgedoc"
   ],
-  "rclone_destination": "wasabi:my-docker-backups/",
+  "rclone_destination": "wasabi:baba-docker-backups/",
   "pushover_api_token": "YourTokenHere",
   "pushover_user_key": "YourUserKeyHere",
   "containers_in_order": [
