@@ -23,7 +23,6 @@ tailor various settings to match your environment:
 
 
 
-    # Configuration section
 
 ~~~
 DEFAULTS = {
@@ -38,6 +37,7 @@ DEFAULTS = {
     "containers_in_order": [],
     "backup_container_name": ""
 }
+~~~
 
 ### Sample Configuration File
 
@@ -70,15 +70,6 @@ DEFAULTS = {
   "backup_container_name": "caddy"
 }
 ~~~
-    # Additional directories to backup (Optional)
-    # If you have any additional directories you want to backup alongside your Docker volumes, specify them here.
-    # The backups will be named after the directory's base name and stored in the same location as other backups.
-    additional_directories_to_backup = [
-        "/path/to/first/directory",
-        "/path/to/second/directory",
-        # Add as many directories as you wish.
-    ]
-
 
 ## Script Operation Breakdown
 
