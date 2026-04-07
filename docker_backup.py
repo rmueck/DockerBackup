@@ -15,37 +15,41 @@ import time
 TEMP_BACKUP_DIR = "/tmp/"
 
 # Base directory where backups are stored
-BASE_BACKUP_DIR = "/backups/"
+BASE_BACKUP_DIR = "/var/tmp/Docker-Backups"
 
 # Maximum number of backups to keep (older backups will be deleted)
-MAX_BACKUPS = 8
+MAX_BACKUPS = 3
 
 # Directory containing Docker volumes / data
-DOCKER_VOLUME_DIR = "/path/to/your/docker_volumes"
+DOCKER_VOLUME_DIR = "/var/lib/docker/volumes"
 
 ADDITIONAL_DIRECTORIES_TO_BACKUP = [
-"/path/to/first/directory",
-"/path/to/second/directory",
-# you can add as many folders as you want here.
+    "/var/azuracast",
+    "/var/Containers/vaultwarden",
+    "/var/Containers/seafile",
+    "/var/Containers/caddy",
+    "/var/Containers/hedgedoc",
+    # you can add as many folders as you want here.
 ]
 
 # Below settings are optional, you can add a rclone mounted cloud drive in order to enable off-site backups
 # and receive push notifications when a backup job is finished (using pushover)
-RCLONE_DESTINATION = "your_cloud_drive:Backups/"
+RCLONE_DESTINATION = "wasabi:my-docker-backups/"
 PUSHOVER_API_TOKEN = "YourTokenHere"
 PUSHOVER_USER_KEY = "YourUserKeyHere"
 
 # List of Docker containers to be restarted in the specified order after backup
 # You should replace the names below with the names of their own Docker containers
 # To get the list of running containers and their names, use the command: docker ps --format '{{.Names}}'
-CONTAINERS_IN_ORDER = ["mosquitto", "zigbee2mqtt", "esphome", "homeassistant"]
-
+CONTAINERS_IN_ORDER = ["seafile-redis", "seafile-mysql", "seafile", "seadoc", "azuracast_updater", "azuracast", "vaultwarden", "hedgedoc-database-1", "hedgedoc-app-1", "caddy"]
 # Name of the container running the backup script (to avoid stopping it)
-BACKUP_CONTAINER_NAME = "backup_container_name_here"
+BACKUP_CONTAINER_NAME = "caddy"
 
 ######################################
 
+
 def send_pushover_notification(message):
+    print("\n" + message)  # Always print to shell regardless of Pushover config
     if not PUSHOVER_API_TOKEN or not PUSHOVER_USER_KEY:
         print("Pushover credentials are missing. Skipping notification.")
         return
@@ -71,7 +75,11 @@ def start_container(container_name):
     subprocess.run(["docker", "start", container_name])
 
 def log_backup_details(timestamp, backup_name, backup_size, cloud_path=None):
-    """Log backup details to a log file."""
+    """Log backup details to the local log file only.
+    The log is copied to cloud storage once at the end of main(), after all
+    entries have been appended — avoiding the race condition where each call
+    would overwrite the temp file and upload an incomplete single-line log.
+    """
     log_entry = f"Date: {timestamp}, Size: {backup_size:.2f} MB, Local Path: {os.path.join(BASE_BACKUP_DIR, timestamp, backup_name)}"
 
     if cloud_path:
@@ -79,17 +87,9 @@ def log_backup_details(timestamp, backup_name, backup_size, cloud_path=None):
 
     log_entry += "\n"
 
-    # Log locally
+    # Append to local log only — cloud upload happens once at end of main()
     with open(os.path.join(BASE_BACKUP_DIR, "backup_log.txt"), "a") as log_file:
         log_file.write(log_entry)
-
-    # Log on cloud if RCLONE_DESTINATION is set
-    if RCLONE_DESTINATION:
-        with open(os.path.join(TEMP_BACKUP_DIR, "backup_log.txt"), "w") as temp_log_file:
-            temp_log_file.write(log_entry)
-
-        subprocess.run(["rclone", "copy", os.path.join(TEMP_BACKUP_DIR, "backup_log.txt"), os.path.join(RCLONE_DESTINATION, "backup_log.txt")])
-        os.remove(os.path.join(TEMP_BACKUP_DIR, "backup_log.txt"))
 
 def main():
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
@@ -130,7 +130,7 @@ def main():
 
     # Logging docker volumes backup details
     backup_name = "docker_backup.tar.gz"
-    backup_size = os.path.getsize(os.path.join(current_backup_dir, backup_name))
+    backup_size = os.path.getsize(os.path.join(current_backup_dir, backup_name)) / (1024 * 1024)
     log_backup_details(timestamp, backup_name, backup_size, os.path.join(RCLONE_DESTINATION, timestamp, backup_name))
 
     for dir_to_backup in ADDITIONAL_DIRECTORIES_TO_BACKUP:
@@ -142,7 +142,7 @@ def main():
             os.rename(temp_backup_path, os.path.join(current_backup_dir, backup_name))
 
             # Logging additional directory backup details
-            backup_size = os.path.getsize(os.path.join(current_backup_dir, backup_name))
+            backup_size = os.path.getsize(os.path.join(current_backup_dir, backup_name)) / (1024 * 1024)
             log_backup_details(timestamp, backup_name, backup_size, os.path.join(RCLONE_DESTINATION, timestamp, backup_name))
         except subprocess.CalledProcessError:
             print(f"Error while backing up {dir_to_backup}. Skipping.")
@@ -171,13 +171,20 @@ def main():
         upload_status_icon = "✅" if "Failed to copy" not in rclone_output else "❌"
         print("Rclone copy finished.")
 
-        # Copying the log file to the cloud destination
-        rclone_result = subprocess.run(
-            ["rclone", "copy", os.path.join(BASE_BACKUP_DIR, "backup_log.txt"), os.path.join(RCLONE_DESTINATION)],
-            capture_output=True
-        )
+        # Copy the complete local log file to cloud using copyto, so it lands as
+        # a flat file at RCLONE_DESTINATION/backup_log.txt — not a subdirectory.
+        # This runs after all log_backup_details() calls, so the log is complete.
+        subprocess.run([
+            "rclone", "copyto",
+            os.path.join(BASE_BACKUP_DIR, "backup_log.txt"),
+            os.path.join(RCLONE_DESTINATION, "backup_log.txt")
+        ])
 
-    all_backups = sorted(os.listdir(BASE_BACKUP_DIR))
+    # Rotate old backups — keep only MAX_BACKUPS most recent
+    all_backups = sorted([
+        entry for entry in os.listdir(BASE_BACKUP_DIR)
+        if os.path.isdir(os.path.join(BASE_BACKUP_DIR, entry))
+    ])
     while len(all_backups) > MAX_BACKUPS:
         shutil.rmtree(os.path.join(BASE_BACKUP_DIR, all_backups.pop(0)))
 
