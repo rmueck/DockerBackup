@@ -22,6 +22,37 @@ Ensure the following prerequisites are satisfied before executing the script:
 
 ## Configuration
 
+### Sample Configuration File
+
+~~~json
+{
+  "temp_backup_dir": "/tmp",
+  "base_backup_dir": "/var/tmp/Docker-Backups",
+  "max_backups": 3,
+  "docker_volume_dir": "/var/lib/docker/volumes",
+  "additional_directories_to_backup": [
+    "/var/Containers/vaultwarden",
+    "/var/Containers/caddy",
+    "/var/Containers/hedgedoc"
+  ],
+  "rclone_destination": "wasabi:baba-docker-backups/",
+  "pushover_api_token": "YourTokenHere",
+  "pushover_user_key": "YourUserKeyHere",
+  "containers_in_order": [
+    "seafile-redis",
+    "seafile-mysql",
+    "seafile",
+    "seadoc",
+    "azuracast_updater",
+    "azuracast",
+    "vaultwarden",
+    "hedgedoc-database-1",
+    "hedgedoc-app-1",
+    "caddy"
+  ],
+  "backup_container_name": "caddy"
+}
+~~~
 The script contains a configuration section at its beginning, allowing you to
 tailor various settings to match your environment:
 
@@ -29,6 +60,20 @@ tailor various settings to match your environment:
 
     # Configuration section
 
+~~~
+DEFAULTS = {
+    "temp_backup_dir": "/tmp",
+    "base_backup_dir": "/var/tmp/Docker-Backups",
+    "max_backups": 3,
+    "docker_volume_dir": "/var/lib/docker/volumes",
+    "additional_directories_to_backup": [],
+    "rclone_destination": "",
+    "pushover_api_token": "",
+    "pushover_user_key": "",
+    "containers_in_order": [],
+    "backup_container_name": ""
+}
+~~~
     # Temporary directory for creating backup files before moving them to the final backup directory
     # Specify a directory path where temporary backup files will be stored.
     TEMP_BACKUP_DIR = "/tmp/"
@@ -87,6 +132,19 @@ Here’s a step-by-step breakdown of what the script does:
   9. **Notification (Optional):** A notification summarizing the backup details is sent via Pushover.
 
 ## Running the Script
+
+~~~
+usage: docker-backup [-h] [--config CONFIG] [--dry-run] [--no-rclone]
+
+Docker backup script
+
+options:
+  -h, --help            show this help message and exit
+  --config CONFIG, -c CONFIG
+                        Path to JSON config file (default: /etc/docker-backup/config.json)
+  --dry-run             Show actions without stopping/starting containers, creating archives, or uploading
+  --no-rclone           Disable rclone upload even if rclone_destination is set in config
+~~~
 
 The script should be executed with superuser privileges to avoid permission
 issues, although users can adapt the script to suit their requirements. Use
