@@ -1,0 +1,27 @@
+{
+  "temp_backup_dir": "/tmp",
+  "base_backup_dir": "/var/tmp/Docker-Backups",
+  "max_backups": 3,
+  "docker_volume_dir": "/var/lib/docker/volumes",
+  "additional_directories_to_backup": [
+    "/var/Containers/vaultwarden",
+    "/var/Containers/caddy",
+    "/var/Containers/hedgedoc"
+  ],
+  "rclone_destination": "wasabi:baba-docker-backups/",
+  "pushover_api_token": "YourTokenHere",
+  "pushover_user_key": "YourUserKeyHere",
+  "containers_in_order": [
+    "seafile-redis",
+    "seafile-mysql",
+    "seafile",
+    "seadoc",
+    "azuracast_updater",
+    "azuracast",
+    "vaultwarden",
+    "hedgedoc-database-1",
+    "hedgedoc-app-1",
+    "caddy"
+  ],
+  "backup_container_name": "caddy"
+}
