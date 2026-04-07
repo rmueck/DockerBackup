@@ -15,7 +15,6 @@ Ensure the following prerequisites are satisfied before executing the script:
   * **Docker:** Docker needs to be installed and operational on your system.
   * **pigz:** The script utilizes [pigz](https://zlib.net/pigz/) for parallel gzip compression. Install it via your system's package manager, e.g., on Ubuntu: `sudo apt-get install pigz`.
   * **rclone (Optional):** If off-site backups are desired, configure [rclone](https://rclone.org/) with your cloud storage provider.
-  * **Pushover (Optional):** To receive notifications on backup status, set up a [Pushover](https://pushover.net/) account and install the app on your device.
 
 ## Configuration
 
