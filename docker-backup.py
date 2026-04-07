@@ -26,6 +26,7 @@ DEFAULTS = {
     "backup_container_name": ""
 }
 
+
 def load_config(path):
     cfg = {}
     try:
@@ -60,6 +61,7 @@ def load_config(path):
         cfg["containers_in_order"] = DEFAULTS["containers_in_order"]
 
     return cfg
+
 
 parser = argparse.ArgumentParser(description="Docker backup script")
 parser.add_argument("--config", "-c", default="/etc/docker-backup/config.json",
@@ -118,10 +120,12 @@ def send_pushover_notification(message):
                  }), {"Content-type": "application/x-www-form-urlencoded"})
     conn.getresponse()
 
+
 def is_container_running(container_name):
     result = run(["docker", "inspect", "-f", "{{.State.Running}}", container_name])
     out = result.stdout.decode() if result.stdout else ""
     return out.strip() == "true"
+
 
 def wait_for_container(container_name, timeout=300):
     start = time.time()
@@ -133,8 +137,10 @@ def wait_for_container(container_name, timeout=300):
         time.sleep(5)
     return True
 
+
 def start_container(container_name):
     run(["docker", "start", container_name])
+
 
 def log_backup_details(timestamp, backup_name, backup_size, cloud_path=None):
     log_entry = f"Date: {timestamp}, Size: {backup_size:.2f} MB, Local Path: {os.path.join(BASE_BACKUP_DIR, timestamp, backup_name)}"
@@ -147,6 +153,8 @@ def log_backup_details(timestamp, backup_name, backup_size, cloud_path=None):
 # -------------------------
 # Main
 # -------------------------
+
+
 def main():
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     current_backup_dir = os.path.join(BASE_BACKUP_DIR, timestamp)
@@ -279,6 +287,7 @@ def main():
     message += f"🚀 Upload status: {upload_status_icon}\n"
     message += f"🐳 Number of containers backed up: {len(all_containers_ids)}\n"
     send_pushover_notification(message)
+
 
 if __name__ == "__main__":
     main()
