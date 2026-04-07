@@ -73,48 +73,15 @@ DEFAULTS = {
     "containers_in_order": [],
     "backup_container_name": ""
 }
-~~~
-    # Temporary directory for creating backup files before moving them to the final backup directory
-    # Specify a directory path where temporary backup files will be stored.
-    TEMP_BACKUP_DIR = "/tmp/"
-
-    # Base directory where backups are stored
-    # Specify the directory path where the final backup files will be stored.
-    BASE_BACKUP_DIR = "/backups/"
-
-    # Maximum number of backups to keep (older backups will be deleted)
-    # Specify the maximum number of backup directories to keep. Older backups will be deleted.
-    MAX_BACKUPS = 8
-
-    # Directory containing Docker volumes / data
-    # Specify the directory path where your Docker volumes are located.
-    DOCKER_VOLUME_DIR = "/path/to/your/docker_volumes"
 
     # Additional directories to backup (Optional)
     # If you have any additional directories you want to backup alongside your Docker volumes, specify them here.
     # The backups will be named after the directory's base name and stored in the same location as other backups.
-    ADDITIONAL_DIRECTORIES_TO_BACKUP = [
+    additional_directories_to_backup = [
         "/path/to/first/directory",
         "/path/to/second/directory",
         # Add as many directories as you wish.
     ]
-
-    # Off-site backup destination using rclone
-    # Specify the rclone remote name and path where backups should be copied.
-    # Leave it blank if you do not wish to use rclone for off-site backups.
-    RCLONE_DESTINATION = "your_cloud_drive:Backups/"
-
-    # Pushover credentials for receiving notifications
-    # Specify your Pushover API token and user key to receive notifications.
-    # Leave them blank if you do not wish to receive notifications.
-    PUSHOVER_API_TOKEN = "YourTokenHere"
-    PUSHOVER_USER_KEY = "YourUserKeyHere"
-
-    # List of Docker containers to be restarted in the specified order after backup
-    # Specify the names of your Docker containers in the order you want them to be restarted.
-    # Use the command: docker ps --format '{{.Names}}' to get the list of running containers.
-    CONTAINERS_IN_ORDER = ["mosquitto", "zigbee2mqtt", "esphome", "homeassistant"]
-
 
 
 ## Script Operation Breakdown
