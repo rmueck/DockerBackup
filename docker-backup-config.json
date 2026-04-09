@@ -1,5 +1,5 @@
 {
-  "temp_backup_dir": "/var/tmp",
+  "temp_backup_dir": "/var/tmp/_tmp_backup",
   "base_backup_dir": "/var/tmp/Docker-Backups",
   "max_backups": 3,
   "docker_volume_dir": "/var/lib/docker/volumes",

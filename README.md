@@ -136,6 +136,23 @@ intervals using crontab. Follow the steps below:
 Note: Ensure that the script is executable and the path to the script in the
 crontab file is correct.
 
+## Restore
+
+Follow the following commands:
+~~~sh
+BACKUP_DATE=2026-04-06-12-40-36
+BACKUP_DIR="/var/tmp/Docker-Backups/$BACKUP_DATE"
+
+tar --use-compress-program=pigz -xvf "$BACKUP_DIR/docker_backup.tar.gz" -C /
+tar --use-compress-program=pigz -xvf "/$BACKUP_DIR/vaultwarden.tar.gz" -C /
+tar --use-compress-program=pigz -xvf "/$BACKUP_DIR/seafile.tar.gz" -C /
+tar --use-compress-program=pigz -xvf "/$BACKUP_DIR/azuracast.tar.gz" -C /
+tar --use-compress-program=pigz -xvf "/$BACKUP_DIR/hedgedoc.tar.gz" -C /
+tar --use-compress-program=pigz -xvf "/$BACKUP_DIR/caddy.tar.gz" -C /
+~~~
+
+**Adopt the BACKUP_DATE to a real value**
+
 ## Contact
 
 For any additional inquiries or issues, feel free to open an issue on this
