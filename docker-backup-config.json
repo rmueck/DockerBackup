@@ -8,7 +8,8 @@
     "/var/Containers/seafile",
     "/var/Containers/vaultwarden",
     "/var/Containers/caddy",
-    "/var/Containers/hedgedoc"
+    "/var/Containers/hedgedoc",
+    "/var/Containers/joplin"
   ],
   "rclone_destination": "wasabi:baba-docker-backups/",
   "pushover_api_token": "YourTokenHere",
@@ -23,7 +24,8 @@
     "vaultwarden",
     "hedgedoc-database-1",
     "hedgedoc-app-1",
-    "caddy"
+    "caddy",
+    "joplin"
   ],
   "backup_container_name": "azuracast"
 }
