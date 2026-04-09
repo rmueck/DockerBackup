@@ -1,7 +1,7 @@
 {
   "temp_backup_dir": "/var/tmp/_tmp_backup",
   "base_backup_dir": "/var/tmp/Docker-Backups",
-  "max_backups": 3,
+  "max_backups": 7,
   "docker_volume_dir": "/var/lib/docker/volumes",
   "additional_directories_to_backup": [
     "/var/azuracast",
@@ -25,5 +25,5 @@
     "hedgedoc-app-1",
     "caddy"
   ],
-  "backup_container_name": "caddy"
+  "backup_container_name": "azuracast"
 }
