@@ -1,7 +1,7 @@
 {
   "temp_backup_dir": "/var/tmp/_tmp_backup",
   "base_backup_dir": "/var/tmp/Docker-Backups",
-  "max_backups": 7,
+  "max_backups": 3,
   "docker_volume_dir": "/var/lib/docker/volumes",
   "additional_directories_to_backup": [
     "/var/azuracast",
@@ -12,20 +12,9 @@
     "/var/Containers/joplin"
   ],
   "rclone_destination": "wasabi:baba-docker-backups/",
-  "pushover_api_token": "YourTokenHere",
-  "pushover_user_key": "YourUserKeyHere",
+  "pushover_api_token": "DUMMY",
+  "pushover_user_key": "DUMMY",
   "containers_in_order": [
-    "azuracast_updater",
-    "azuracast",
-    "seafile-redis",
-    "seafile-mysql",
-    "seafile",
-    "seadoc",
-    "vaultwarden",
-    "hedgedoc-database-1",
-    "hedgedoc-app-1",
-    "caddy",
-    "joplin"
   ],
   "backup_container_name": "azuracast"
 }
