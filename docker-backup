@@ -212,7 +212,8 @@ def main():
     print("Backing up docker volumes and configurations...")
     temp_backup_path = os.path.join(TEMP_BACKUP_DIR, "docker_backup.tar.gz")
     config_files = [os.path.join(TEMP_BACKUP_DIR, container_name + "_config.json") for container_name in all_containers_names]
-    tar_args = ["tar", "--use-compress-program=pigz", "-cvf", temp_backup_path, DOCKER_VOLUME_DIR] + config_files
+    # tar_args = ["tar", "--use-compress-program=pigz", "-cvf", temp_backup_path, DOCKER_VOLUME_DIR] + config_files
+    tar_args = ["tar", "--use-compress-program=pigz", "-cf", temp_backup_path, DOCKER_VOLUME_DIR] + config_files
     run(tar_args)
     if DRY_RUN:
         print(f"DRY RUN: Would move {temp_backup_path} to {os.path.join(current_backup_dir, 'docker_backup.tar.gz')}")
@@ -231,7 +232,8 @@ def main():
         backup_name = os.path.basename(dir_to_backup.rstrip("/")) + ".tar.gz"
         temp_backup_path = os.path.join(TEMP_BACKUP_DIR, backup_name)
         try:
-            run(["tar", "--use-compress-program=pigz", "-cvf", temp_backup_path, dir_to_backup], check=True)
+            # run(["tar", "--use-compress-program=pigz", "-cvf", temp_backup_path, dir_to_backup], check=True)
+            run(["tar", "--use-compress-program=pigz", "-cf", temp_backup_path, dir_to_backup], check=True)
             if DRY_RUN:
                 print(f"DRY RUN: Would move {temp_backup_path} to {os.path.join(current_backup_dir, backup_name)}")
             else:
@@ -292,9 +294,9 @@ def main():
         backup_size = sum(os.path.getsize(os.path.join(current_backup_dir, f)) for f in os.listdir(current_backup_dir))
     else:
         backup_size = 0
-    message = f"🔥 Backup Summary 🔥\n\n"
+    message = "🔥 Backup Summary 🔥\n\n"
     message += f"🕒 Time elapsed: {elapsed_time}\n"
-    message += f"💾 Backup size: {backup_size / (1024*1024):.2f} MB\n"
+    message += f"💾 Backup size: {backup_size / (1024 * 1024):.2f} MB\n"
     message += f"🚀 Upload status: {upload_status_icon}\n"
     message += f"🐳 Number of containers backed up: {len(all_containers_ids)}\n"
     send_pushover_notification(message)

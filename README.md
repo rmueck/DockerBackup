@@ -143,6 +143,13 @@ Follow the following commands:
 BACKUP_DATE=2026-04-06-12-40-36
 BACKUP_DIR="/var/tmp/Docker-Backups/$BACKUP_DATE"
 
+# only azuracast volumes
+tar --use-compress-program="unpigz -d" --wildcards -xvf "$BACKUP_DIR/docker_backup.tar.gz" '*/azuracast*'
+
+# all volumes
+tar --use-compress-program=pigz -xvf "$BACKUP_DIR/docker_backup.tar.gz" -C /
+
+# additional dirs (containers)
 tar --use-compress-program=pigz -xvf "$BACKUP_DIR/docker_backup.tar.gz" -C /
 tar --use-compress-program=pigz -xvf "/$BACKUP_DIR/vaultwarden.tar.gz" -C /
 tar --use-compress-program=pigz -xvf "/$BACKUP_DIR/seafile.tar.gz" -C /
