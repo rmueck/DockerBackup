@@ -263,6 +263,8 @@ def main():
         print(f"Starting rclone copy to {os.path.join(RCLONE_DESTINATION, dir_name)}...")
         if not DRY_RUN:
             rclone_result = run(
+                # testing parameters
+                # ["rclone", "copy", current_backup_dir, os.path.join(RCLONE_DESTINATION, dir_name), " --transfers 8 --checkers 16 --drive-chunk-size 512M --buffer-size 512M --fast-list "],
                 ["rclone", "copy", current_backup_dir, os.path.join(RCLONE_DESTINATION, dir_name)],
             )
             rclone_output = (rclone_result.stdout.decode() if rclone_result.stdout else "") + (rclone_result.stderr.decode() if rclone_result.stderr else "")
