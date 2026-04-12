@@ -16,5 +16,5 @@
   "pushover_user_key": "DUMMY",
   "containers_in_order": [
   ],
-  "backup_container_name": "azuracast"
+  "backup_container_name": "caddy"
 }

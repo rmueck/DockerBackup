@@ -105,20 +105,20 @@ def run(cmd, check=False):
 
 def send_pushover_notification(message):
     print("\n" + message)
-    if not PUSHOVER_API_TOKEN or not PUSHOVER_USER_KEY or DRY_RUN:
-        if DRY_RUN:
-            print("DRY RUN: Skipping Pushover notification.")
-        else:
-            print("Pushover credentials missing. Skipping notification.")
-        return
-    conn = http.client.HTTPSConnection("api.pushover.net:443")
-    conn.request("POST", "/1/messages.json",
-                 urllib.parse.urlencode({
-                     "token": PUSHOVER_API_TOKEN,
-                     "user": PUSHOVER_USER_KEY,
-                     "message": message,
-                 }), {"Content-type": "application/x-www-form-urlencoded"})
-    conn.getresponse()
+    # if not PUSHOVER_API_TOKEN or not PUSHOVER_USER_KEY or DRY_RUN:
+    #     if DRY_RUN:
+    #         print("DRY RUN: Skipping Pushover notification.")
+    #     else:
+    #         print("Pushover credentials missing. Skipping notification.")
+    #     return
+    # conn = http.client.HTTPSConnection("api.pushover.net:443")
+    # conn.request("POST", "/1/messages.json",
+    #              urllib.parse.urlencode({
+    #                  "token": PUSHOVER_API_TOKEN,
+    #                  "user": PUSHOVER_USER_KEY,
+    #                  "message": message,
+    #              }), {"Content-type": "application/x-www-form-urlencoded"})
+    # conn.getresponse()
 
 
 def is_container_running(container_name):
