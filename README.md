@@ -162,22 +162,25 @@ For any additional inquiries or issues, feel free to open an issue on this
 repository.
 
 ----
-~~
-BACKUP_DATE=2026-04-06-12-40-36
-BACKUP_DIR="/var/tmp/Docker-Backups/$BACKUP_DATE"
-# only azuracast volumes
-tar --use-compress-program="unpigz -d" --wildcards -xvf "$BACKUP_DIR/docker_backup.tar.gz" '*/azuracast*'
 
-# all volumes
-tar --use-compress-program=pigz -xvf "$BACKUP_DIR/docker_backup.tar.gz" -C /
+**OLD STUFF**
 
-# additional dirs (containers)
-tar --use-compress-program=pigz -xvf "$BACKUP_DIR/docker_backup.tar.gz" -C /
-tar --use-compress-program=pigz -xvf "/$BACKUP_DIR/vaultwarden.tar.gz" -C /
-tar --use-compress-program=pigz -xvf "/$BACKUP_DIR/seafile.tar.gz" -C /
-tar --use-compress-program=pigz -xvf "/$BACKUP_DIR/azuracast.tar.gz" -C /
-tar --use-compress-program=pigz -xvf "/$BACKUP_DIR/hedgedoc.tar.gz" -C /
-tar --use-compress-program=pigz -xvf "/$BACKUP_DIR/caddy.tar.gz" -C /
-~~
-~~~
+
+~~BACKUP_DATE=2026-04-06-12-40-36~~
+~~BACKUP_DIR="/var/tmp/Docker-Backups/$BACKUP_DATE"~~
+
+~~only azuracast volumes~~
+~~tar --use-compress-program="unpigz -d" --wildcards -xvf "$BACKUP_DIR/docker_backup.tar.gz" '*/azuracast*'~~
+
+~~all volumes~~
+~~tar --use-compress-program=pigz -xvf "$BACKUP_DIR/docker_backup.tar.gz" -C /~~
+
+~~additional dirs (containers)~~
+~~tar --use-compress-program=pigz -xvf "$BACKUP_DIR/docker_backup.tar.gz" -C /~~
+~~tar --use-compress-program=pigz -xvf "/$BACKUP_DIR/vaultwarden.tar.gz" -C /~~
+~~tar --use-compress-program=pigz -xvf "/$BACKUP_DIR/seafile.tar.gz" -C /~~
+~~tar --use-compress-program=pigz -xvf "/$BACKUP_DIR/azuracast.tar.gz" -C /~~
+~~tar --use-compress-program=pigz -xvf "/$BACKUP_DIR/hedgedoc.tar.gz" -C /~~
+~~tar --use-compress-program=pigz -xvf "/$BACKUP_DIR/caddy.tar.gz" -C /~~
+
 
