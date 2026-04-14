@@ -139,10 +139,32 @@ crontab file is correct.
 ## Restore
 
 Follow the following commands:
+
 ~~~sh
+usage: docker-restore.py [-h] [--container CONTAINER] backup_folder
+
+Multi-Component Docker Restore
+
+positional arguments:
+  backup_folder         Path to the timestamped backup folder
+
+options:
+  -h, --help            show this help message and exit
+  --container, -c CONTAINER
+                        Comma-separated components (e.g., joplin,seafile)
+~~~
+
+**Adopt the backup_folder  to a real value**
+
+## Contact
+
+For any additional inquiries or issues, feel free to open an issue on this
+repository.
+
+----
+~~
 BACKUP_DATE=2026-04-06-12-40-36
 BACKUP_DIR="/var/tmp/Docker-Backups/$BACKUP_DATE"
-
 # only azuracast volumes
 tar --use-compress-program="unpigz -d" --wildcards -xvf "$BACKUP_DIR/docker_backup.tar.gz" '*/azuracast*'
 
@@ -156,12 +178,6 @@ tar --use-compress-program=pigz -xvf "/$BACKUP_DIR/seafile.tar.gz" -C /
 tar --use-compress-program=pigz -xvf "/$BACKUP_DIR/azuracast.tar.gz" -C /
 tar --use-compress-program=pigz -xvf "/$BACKUP_DIR/hedgedoc.tar.gz" -C /
 tar --use-compress-program=pigz -xvf "/$BACKUP_DIR/caddy.tar.gz" -C /
+~~
 ~~~
-
-**Adopt the BACKUP_DATE to a real value**
-
-## Contact
-
-For any additional inquiries or issues, feel free to open an issue on this
-repository.
 
