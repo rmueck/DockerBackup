@@ -4,7 +4,7 @@
   "max_backups": 3,
   "docker_volume_dir": "/var/lib/docker/volumes",
   "additional_directories_to_backup": [
-    "/var/azuracast",
+    "/var/Containers/azuracast",
     "/var/Containers/seafile",
     "/var/Containers/vaultwarden",
     "/var/Containers/caddy",
