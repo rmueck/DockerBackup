@@ -11,10 +11,10 @@
     "/var/Containers/hedgedoc",
     "/var/Containers/joplin"
   ],
-  "rclone_destination": "wasabi:baba-docker-backups/",
+  "rclone_destination": "",
   "pushover_api_token": "DUMMY",
   "pushover_user_key": "DUMMY",
   "containers_in_order": [
   ],
-  "backup_container_name": "azuracast"
+  "backup_container_name": "caddy"
 }
